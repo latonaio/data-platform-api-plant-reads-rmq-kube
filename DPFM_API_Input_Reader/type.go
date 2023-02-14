@@ -64,6 +64,7 @@ type SDC struct {
 	ServiceLabel      string   `json:"service_label"`
 	APIType           string   `json:"api_type"`
 	General           General  `json:"Plant"`
+	Generals          Generals `json:"Plants"`
 	APISchema         string   `json:"api_schema"`
 	Accepter          []string `json:"accepter"`
 	Deleted           bool     `json:"deleted"`
@@ -93,6 +94,11 @@ type General struct {
 	PlantIDByExtSystem   *string         `json:"PlantIDByExtSystem"`
 	IsMarkedForDeletion  *bool           `json:"IsMarkedForDeletion"`
 	StorageLocation      StorageLocation `json:"StorageLocation"`
+}
+
+type Generals []struct {
+	BusinessPartner int    `json:"BusinessPartner"`
+	Plant           string `json:"Plant"`
 }
 
 type StorageLocation struct {

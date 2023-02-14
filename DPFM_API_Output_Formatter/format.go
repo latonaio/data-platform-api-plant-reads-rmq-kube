@@ -7,8 +7,9 @@ import (
 	"fmt"
 )
 
-func ConvertToGeneral(sdc *api_input_reader.SDC, rows *sql.Rows) (*General, error) {
+func ConvertToGeneral(sdc *api_input_reader.SDC, rows *sql.Rows) (*[]General, error) {
 	pm := &requests.General{}
+	generals := make([]General, 0, len(sdc.Generals))
 
 	for i := 0; true; i++ {
 		if !rows.Next() {
@@ -46,34 +47,36 @@ func ConvertToGeneral(sdc *api_input_reader.SDC, rows *sql.Rows) (*General, erro
 			fmt.Printf("err = %+v \n", err)
 			return nil, err
 		}
-	}
-	data := pm
 
-	general := &General{
-		BusinessPartner:      data.BusinessPartner,
-		Plant:                data.Plant,
-		PlantFullName:        data.PlantFullName,
-		PlantName:            data.PlantName,
-		Language:             data.Language,
-		CreationDate:         data.CreationDate,
-		CreationTime:         data.CreationTime,
-		LastChangeDate:       data.LastChangeDate,
-		LastChangeTime:       data.LastChangeTime,
-		PlantFoundationDate:  data.PlantFoundationDate,
-		PlantLiquidationDate: data.PlantLiquidationDate,
-		SearchTerm1:          data.SearchTerm1,
-		SearchTerm2:          data.SearchTerm2,
-		PlantDeathDate:       data.PlantDeathDate,
-		PlantIsBlocked:       data.PlantIsBlocked,
-		GroupPlantName1:      data.GroupPlantName1,
-		GroupPlantName2:      data.GroupPlantName2,
-		AddressID:            data.AddressID,
-		Country:              data.Country,
-		TimeZone:             data.TimeZone,
-		PlantIDByExtSystem:   data.PlantIDByExtSystem,
-		IsMarkedForDeletion:  data.IsMarkedForDeletion,
+		data := pm
+
+		generals = append(generals, General{
+			BusinessPartner:      data.BusinessPartner,
+			Plant:                data.Plant,
+			PlantFullName:        data.PlantFullName,
+			PlantName:            data.PlantName,
+			Language:             data.Language,
+			CreationDate:         data.CreationDate,
+			CreationTime:         data.CreationTime,
+			LastChangeDate:       data.LastChangeDate,
+			LastChangeTime:       data.LastChangeTime,
+			PlantFoundationDate:  data.PlantFoundationDate,
+			PlantLiquidationDate: data.PlantLiquidationDate,
+			SearchTerm1:          data.SearchTerm1,
+			SearchTerm2:          data.SearchTerm2,
+			PlantDeathDate:       data.PlantDeathDate,
+			PlantIsBlocked:       data.PlantIsBlocked,
+			GroupPlantName1:      data.GroupPlantName1,
+			GroupPlantName2:      data.GroupPlantName2,
+			AddressID:            data.AddressID,
+			Country:              data.Country,
+			TimeZone:             data.TimeZone,
+			PlantIDByExtSystem:   data.PlantIDByExtSystem,
+			IsMarkedForDeletion:  data.IsMarkedForDeletion,
+		})
+
 	}
-	return general, nil
+	return &generals, nil
 }
 
 func ConvertToStorageLocation(sdc *api_input_reader.SDC, rows *sql.Rows) (*StorageLocation, error) {
