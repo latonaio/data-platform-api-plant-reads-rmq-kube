@@ -71,6 +71,7 @@ func (c *DPFMAPICaller) General(
 		*errs = append(*errs, err)
 		return nil
 	}
+	defer rows.Close()
 
 	data, err := dpfm_api_output_formatter.ConvertToGeneral(input, rows)
 	if err != nil {
@@ -110,6 +111,7 @@ func (c *DPFMAPICaller) Generals(
 		*errs = append(*errs, err)
 		return nil
 	}
+	defer rows.Close()
 
 	data, err := dpfm_api_output_formatter.ConvertToGeneral(input, rows)
 	if err != nil {
@@ -142,6 +144,7 @@ func (c *DPFMAPICaller) StorageLocation(
 		*errs = append(*errs, err)
 		return nil
 	}
+	defer rows.Close()
 
 	data, err := dpfm_api_output_formatter.ConvertToStorageLocation(input, rows)
 	if err != nil {

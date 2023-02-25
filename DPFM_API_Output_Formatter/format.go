@@ -8,17 +8,14 @@ import (
 )
 
 func ConvertToGeneral(sdc *api_input_reader.SDC, rows *sql.Rows) (*[]General, error) {
-	pm := &requests.General{}
+	defer rows.Close()
 	generals := make([]General, 0, len(sdc.Generals))
 
-	for i := 0; true; i++ {
-		if !rows.Next() {
-			if i == 0 {
-				return nil, fmt.Errorf("DBに対象のレコードが存在しません。")
-			} else {
-				break
-			}
-		}
+	i := 0
+	for rows.Next() {
+		i++
+		pm := &requests.General{}
+
 		err := rows.Scan(
 			&pm.BusinessPartner,
 			&pm.Plant,
@@ -45,7 +42,7 @@ func ConvertToGeneral(sdc *api_input_reader.SDC, rows *sql.Rows) (*[]General, er
 		)
 		if err != nil {
 			fmt.Printf("err = %+v \n", err)
-			return nil, err
+			return &generals, err
 		}
 
 		data := pm
@@ -74,22 +71,23 @@ func ConvertToGeneral(sdc *api_input_reader.SDC, rows *sql.Rows) (*[]General, er
 			PlantIDByExtSystem:   data.PlantIDByExtSystem,
 			IsMarkedForDeletion:  data.IsMarkedForDeletion,
 		})
-
 	}
+	if i == 0 {
+		fmt.Printf("DBに対象のレコードが存在しません。")
+		return &generals, nil
+	}
+
 	return &generals, nil
 }
 
 func ConvertToStorageLocation(sdc *api_input_reader.SDC, rows *sql.Rows) (*StorageLocation, error) {
+	defer rows.Close()
 	pm := &requests.StorageLocation{}
 
-	for i := 0; true; i++ {
-		if !rows.Next() {
-			if i == 0 {
-				return nil, fmt.Errorf("DBに対象のレコードが存在しません。")
-			} else {
-				break
-			}
-		}
+	i := 0
+	for rows.Next() {
+		i++
+
 		err := rows.Scan(
 			&pm.BusinessPartner,
 			&pm.Plant,
@@ -110,11 +108,15 @@ func ConvertToStorageLocation(sdc *api_input_reader.SDC, rows *sql.Rows) (*Stora
 		)
 		if err != nil {
 			fmt.Printf("err = %+v \n", err)
-			return nil, err
+			return &StorageLocation{}, err
 		}
 	}
-	data := pm
+	if i == 0 {
+		fmt.Printf("DBに対象のレコードが存在しません。")
+		return &StorageLocation{}, nil
+	}
 
+	data := pm
 	storageLocation := &StorageLocation{
 		BusinessPartner:              data.BusinessPartner,
 		Plant:                        data.Plant,
