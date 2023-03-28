@@ -4,7 +4,7 @@ import (
 	"context"
 	dpfm_api_input_reader "data-platform-api-plant-reads-rmq-kube/DPFM_API_Input_Reader"
 	dpfm_api_output_formatter "data-platform-api-plant-reads-rmq-kube/DPFM_API_Output_Formatter"
-	"strings"
+	"fmt"
 	"sync"
 
 	"github.com/latonaio/golang-logging-library-for-data-platform/logger"
@@ -89,15 +89,33 @@ func (c *DPFMAPICaller) Generals(
 	errs *[]error,
 	log *logger.Logger,
 ) *[]dpfm_api_output_formatter.General {
-	var args []interface{}
+	where := "WHERE true = true"
 	generals := input.Generals
-
-	cnt := 0
 	for _, v := range generals {
-		args = append(args, v.BusinessPartner, v.Plant)
-		cnt++
+		clms := ""
+		val := ""
+		ok := false
+		if v.Plant != nil {
+			clms = fmt.Sprintf("%s, %s", clms, "Plant")
+			val = fmt.Sprintf("%s, '%s'", val, *v.Plant)
+			ok = true
+		}
+		if v.BusinessPartner != nil {
+			clms = fmt.Sprintf("%s, %s ", clms, "BusinessPartner")
+			val = fmt.Sprintf("%s, %d ", val, *v.BusinessPartner)
+			ok = true
+		}
+		if v.Language != nil {
+			clms = fmt.Sprintf("%s, %s ", clms, "Language")
+			val = fmt.Sprintf("%s, '%s' ", val, *v.Language)
+			ok = true
+		}
+
+		if ok {
+			where = fmt.Sprintf("%s OR ( %s ) = ( %s ) ", where, clms[1:], val[1:])
+		}
+
 	}
-	repeat := strings.Repeat("(?,?),", cnt-1) + "(?,?)"
 
 	rows, err := c.db.Query(
 		`SELECT BusinessPartner, Plant, PlantFullName, PlantName, Language, CreationDate, CreationTime, 
@@ -105,8 +123,7 @@ func (c *DPFMAPICaller) Generals(
 		PlantDeathDate, PlantIsBlocked, GroupPlantName1, GroupPlantName2, AddressID, Country, TimeZone, 
 		PlantIDByExtSystem, IsMarkedForDeletion
 		FROM DataPlatformMastersAndTransactionsMysqlKube.data_platform_plant_general_data
-		WHERE (BusinessPartner, Plant)  IN ( `+repeat+` );`, args...,
-	)
+		` + where + `;`)
 	if err != nil {
 		*errs = append(*errs, err)
 		return nil

@@ -43,6 +43,9 @@ func (c *DPFMAPICaller) AsyncPlantReads(
 	// SQL処理
 	response = c.readSqlProcess(nil, &mtx, input, output, accepter, &errs, log)
 
+	for _, e := range errs {
+		log.Error("%+v", e)
+	}
 	return response, nil
 }
 

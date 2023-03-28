@@ -97,8 +97,9 @@ type General struct {
 }
 
 type Generals []struct {
-	BusinessPartner int    `json:"BusinessPartner"`
-	Plant           string `json:"Plant"`
+	BusinessPartner *int    `json:"BusinessPartner"`
+	Plant           *string `json:"Plant"`
+	Language        *string `json:"Language"`
 }
 
 type StorageLocation struct {
