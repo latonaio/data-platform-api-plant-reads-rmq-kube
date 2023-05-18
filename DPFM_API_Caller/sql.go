@@ -89,7 +89,7 @@ func (c *DPFMAPICaller) Generals(
 	errs *[]error,
 	log *logger.Logger,
 ) *[]dpfm_api_output_formatter.General {
-	where := "WHERE true = true"
+	where := "WHERE true != true"
 	generals := input.Generals
 	for _, v := range generals {
 		clms := ""

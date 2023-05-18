@@ -18,6 +18,9 @@ func main() {
 	l := logger.NewLogger()
 	conf := config.NewConf()
 	db, err := database.NewMySQL(conf.DB)
+	if err != nil {
+		l.Fatal(err.Error())
+	}
 	rmq, err := rabbitmq.NewRabbitmqClient(conf.RMQ.URL(), conf.RMQ.QueueFrom(), conf.RMQ.SessionControlQueue(), conf.RMQ.QueueToSQL(), 0)
 	if err != nil {
 		l.Fatal(err.Error())
@@ -30,7 +33,7 @@ func main() {
 	defer rmq.Stop()
 
 	caller := dpfm_api_caller.NewDPFMAPICaller(conf, rmq, db)
-
+	l.Info("READY!")
 	for msg := range iter {
 		start := time.Now()
 		err = callProcess(rmq, caller, conf, msg)
@@ -44,10 +47,15 @@ func main() {
 }
 
 func recovery(l *logger.Logger, err *error) {
-	if e := recover(); e != nil {
-		*err = fmt.Errorf("error occurred: %w", e)
-		l.Error(err)
-		return
+	if err != nil {
+		if *err != nil {
+			l.Error("%+v", *err)
+			if e := recover(); e != nil {
+				*err = fmt.Errorf("error occurred: %w", e)
+				l.Error(err)
+				return
+			}
+		}
 	}
 }
 func getSessionID(data map[string]interface{}) string {
@@ -73,7 +81,6 @@ func callProcess(rmq *rabbitmq.RabbitmqClient, caller *dpfm_api_caller.DPFMAPICa
 		l.Error(err)
 		return
 	}
-
 	accepter := getAccepter(&input)
 	res, errs := caller.AsyncPlantReads(accepter, &input, &output, l)
 	if len(errs) != 0 {
@@ -83,18 +90,19 @@ func callProcess(rmq *rabbitmq.RabbitmqClient, caller *dpfm_api_caller.DPFMAPICa
 		output.APIProcessingResult = getBoolPtr(false)
 		output.APIProcessingError = errs[0].Error()
 		output.Message = res
-		rmq.Send(conf.RMQ.QueueToResponse(), output)
+		// rmq.Send("nestjs-data-connection-request-control-manager-consume", output)
+		rmq.Send("data-platform-api-request-reads-cache-manager-receive-queue", output)
 		return errs[0]
 	}
 	output.APIProcessingResult = getBoolPtr(true)
 	output.Message = res
 
 	l.JsonParseOut(output)
-	rmq.Send(conf.RMQ.QueueToResponse(), output)
+	// rmq.Send("nestjs-data-connection-request-control-manager-consume", output)
+	rmq.Send("data-platform-api-request-reads-cache-manager-receive-queue", output)
 
 	return nil
 }
-
 func getAccepter(input *dpfm_api_input_reader.SDC) []string {
 	accepter := input.Accepter
 	if len(input.Accepter) == 0 {
