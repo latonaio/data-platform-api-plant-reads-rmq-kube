@@ -30,41 +30,22 @@ type Message struct {
 	StorageLocation *StorageLocation `json:"StorageLocation"`
 }
 
-type Plant struct {
-	ConnectionKey string `json:"connection_key"`
-	Result        bool   `json:"result"`
-	RedisKey      string `json:"redis_key"`
-	Filepath      string `json:"filepath"`
-	Product       string `json:"Product"`
-	APISchema     string `json:"api_schema"`
-	MaterialCode  string `json:"material_code"`
-	Deleted       string `json:"deleted"`
-}
-
 type General struct {
-	BusinessPartner      int             `json:"BusinessPartner"`
-	Plant                string          `json:"Plant"`
-	PlantFullName        *string         `json:"PlantFullName"`
-	PlantName            *string         `json:"PlantName"`
-	Language             *string         `json:"Language"`
-	CreationDate         *string         `json:"CreationDate"`
-	CreationTime         *string         `json:"CreationTime"`
-	LastChangeDate       *string         `json:"LastChangeDate"`
-	LastChangeTime       *string         `json:"LastChangeTime"`
-	PlantFoundationDate  *string         `json:"PlantFoundationDate"`
-	PlantLiquidationDate *string         `json:"PlantLiquidationDate"`
-	SearchTerm1          *string         `json:"SearchTerm1"`
-	SearchTerm2          *string         `json:"SearchTerm2"`
-	PlantDeathDate       *string         `json:"PlantDeathDate"`
-	PlantIsBlocked       *bool           `json:"PlantIsBlocked"`
-	GroupPlantName1      *string         `json:"GroupPlantName1"`
-	GroupPlantName2      *string         `json:"GroupPlantName2"`
-	AddressID            *int            `json:"AddressID"`
-	Country              *string         `json:"Country"`
-	TimeZone             *string         `json:"TimeZone"`
-	PlantIDByExtSystem   *string         `json:"PlantIDByExtSystem"`
-	IsMarkedForDeletion  *bool           `json:"IsMarkedForDeletion"`
-	StorageLocation      StorageLocation `json:"StorageLocation"`
+	BusinessPartner      int     `json:"BusinessPartner"`
+	Plant                string  `json:"Plant"`
+	PlantFullName        *string `json:"PlantFullName"`
+	PlantName            *string `json:"PlantName"`
+	Language             *string `json:"Language"`
+	PlantFoundationDate  *string `json:"PlantFoundationDate"`
+	PlantLiquidationDate *string `json:"PlantLiquidationDate"`
+	PlantDeathDate       *string `json:"PlantDeathDate"`
+	AddressID            *int    `json:"AddressID"`
+	Country              *string `json:"Country"`
+	TimeZone             *string `json:"TimeZone"`
+	PlantIDByExtSystem   *string `json:"PlantIDByExtSystem"`
+	CreationDate         *string `json:"CreationDate"`
+	LastChangeDate       *string `json:"LastChangeDate"`
+	IsMarkedForDeletion  *bool   `json:"IsMarkedForDeletion"`
 }
 
 type StorageLocation struct {
@@ -73,15 +54,8 @@ type StorageLocation struct {
 	StorageLocation              string  `json:"StorageLocation"`
 	StorageLocationFullName      *string `json:"StorageLocationFullName"`
 	StorageLocationName          *string `json:"StorageLocationName"`
-	CreationDate                 *string `json:"CreationDate"`
-	CreationTime                 *string `json:"CreationTime"`
-	LastChangeDate               *string `json:"LastChangeDate"`
-	LastChangeTime               *string `json:"LastChangeTime"`
-	SearchTerm1                  *string `json:"SearchTerm1"`
-	SearchTerm2                  *string `json:"SearchTerm2"`
-	StorageLocationIsBlocked     *bool   `json:"StorageLocationIsBlocked"`
-	GroupStorageLocationName1    *string `json:"GroupStorageLocationName1"`
-	GroupStorageLocationName2    *string `json:"GroupStorageLocationName2"`
 	StorageLocationIDByExtSystem *string `json:"StorageLocationIDByExtSystem"`
+	CreationDate                 *string `json:"CreationDate"`
+	LastChangeDate               *string `json:"LastChangeDate"`
 	IsMarkedForDeletion          *bool   `json:"IsMarkedForDeletion"`
 }
