@@ -60,10 +60,13 @@ func (c *DPFMAPICaller) General(
 	businessPartner := input.General.BusinessPartner
 
 	rows, err := c.db.Query(
-		`SELECT BusinessPartner, Plant, PlantFullName, PlantName, Language, CreationDate, CreationTime, 
-		LastChangeDate, LastChangeTime, PlantFoundationDate, PlantLiquidationDate, SearchTerm1, SearchTerm2, 
-		PlantDeathDate, PlantIsBlocked, GroupPlantName1, GroupPlantName2, AddressID, Country, TimeZone, 
-		PlantIDByExtSystem, IsMarkedForDeletion
+		`SELECT BusinessPartner, Plant,
+		PlantFullName, PlantName, Language, 
+		PlantFoundationDate, PlantLiquidationDate, PlantDeathDate, 
+		AddressID, Country, TimeZone, 
+		PlantIDByExtSystem, 
+		CreationDate, LastChangeDate,
+		IsMarkedForDeletion
 		FROM DataPlatformMastersAndTransactionsMysqlKube.data_platform_plant_general_data
 		WHERE (BusinessPartner, Plant) = (?, ?);`, businessPartner, plant,
 	)
@@ -118,10 +121,13 @@ func (c *DPFMAPICaller) Generals(
 	}
 
 	rows, err := c.db.Query(
-		`SELECT BusinessPartner, Plant, PlantFullName, PlantName, Language, CreationDate, CreationTime, 
-		LastChangeDate, LastChangeTime, PlantFoundationDate, PlantLiquidationDate, SearchTerm1, SearchTerm2, 
-		PlantDeathDate, PlantIsBlocked, GroupPlantName1, GroupPlantName2, AddressID, Country, TimeZone, 
-		PlantIDByExtSystem, IsMarkedForDeletion
+		`SELECT BusinessPartner, Plant,
+		PlantFullName, PlantName, Language,
+		PlantFoundationDate, PlantLiquidationDate, PlantDeathDate,
+		AddressID, Country, TimeZone,
+		PlantIDByExtSystem,
+		CreationDate, LastChangeDate,
+		IsMarkedForDeletion
 		FROM DataPlatformMastersAndTransactionsMysqlKube.data_platform_plant_general_data
 		` + where + `;`)
 	if err != nil {
@@ -151,9 +157,11 @@ func (c *DPFMAPICaller) StorageLocation(
 	storageLocation := input.General.StorageLocation.StorageLocation
 
 	rows, err := c.db.Query(
-		`SELECT BusinessPartner, Plant, StorageLocation, StorageLocationFullName, StorageLocationName, CreationDate, 
-		CreationTime, LastChangeDate, LastChangeTime, SearchTerm1, SearchTerm2, StorageLocationIsBlocked, 
-		GroupStorageLocationName1, GroupStorageLocationName2, StorageLocationIDByExtSystem, IsMarkedForDeletion
+		`SELECT BusinessPartner, Plant, StorageLocation,
+		StorageLocationFullName, StorageLocationName,
+		StorageLocationIDByExtSystem, 
+		CreationDate, LastChangeDate,
+		IsMarkedForDeletion
 		FROM DataPlatformMastersAndTransactionsMysqlKube.data_platform_plant_storage_location_data
 		WHERE (BusinessPartner, Plant, StorageLocation) = (?, ?, ?);`, businessPartner, plant, storageLocation,
 	)

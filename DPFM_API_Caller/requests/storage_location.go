@@ -7,7 +7,7 @@ type StorageLocation struct {
 	StorageLocationFullName      *string `json:"StorageLocationFullName"`
 	StorageLocationName          *string `json:"StorageLocationName"`
 	StorageLocationIDByExtSystem *string `json:"StorageLocationIDByExtSystem"`
-	CreationDate                 *string `json:"CreationDate"`
-	LastChangeDate               *string `json:"LastChangeDate"`
+	CreationDate                 string  `json:"CreationDate"`
+	LastChangeDate               string  `json:"LastChangeDate"`
 	IsMarkedForDeletion          *bool   `json:"IsMarkedForDeletion"`
 }
