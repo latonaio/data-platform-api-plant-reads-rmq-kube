@@ -25,8 +25,7 @@ type SDC struct {
 }
 
 type Message struct {
-	General         *General           `json:"General"`
-	Generals        *[]General         `json:"Generals"`
+	General         *[]General         `json:"General"`
 	StorageLocation *[]StorageLocation `json:"StorageLocation"`
 }
 
@@ -53,7 +52,7 @@ type StorageLocation struct {
 	Plant                        string  `json:"Plant"`
 	StorageLocation              string  `json:"StorageLocation"`
 	StorageLocationFullName      *string `json:"StorageLocationFullName"`
-	StorageLocationName          *string `json:"StorageLocationName"`
+	StorageLocationName          string  `json:"StorageLocationName"`
 	StorageLocationIDByExtSystem *string `json:"StorageLocationIDByExtSystem"`
 	CreationDate                 string  `json:"CreationDate"`
 	LastChangeDate               string  `json:"LastChangeDate"`

@@ -20,7 +20,6 @@ func (c *DPFMAPICaller) readSqlProcess(
 	log *logger.Logger,
 ) interface{} {
 	var general *dpfm_api_output_formatter.General
-	var generals *[]dpfm_api_output_formatter.General
 	var storageLocation *dpfm_api_output_formatter.StorageLocation
 	for _, fn := range accepter {
 		switch fn {
@@ -30,7 +29,11 @@ func (c *DPFMAPICaller) readSqlProcess(
 			}()
 		case "Generals":
 			func() {
-				generals = c.Generals(mtx, input, output, errs, log)
+				general = c.Generals(mtx, input, output, errs, log)
+			}()
+		case "GeneralsByBusinessPartners":
+			func() {
+				general = c.GeneralsByBusinessPartners(mtx, input, output, errs, log)
 			}()
 		case "StorageLocation":
 			func() {
@@ -42,7 +45,6 @@ func (c *DPFMAPICaller) readSqlProcess(
 
 	data := &dpfm_api_output_formatter.Message{
 		General:         general,
-		Generals:        generals,
 		StorageLocation: storageLocation,
 	}
 
@@ -55,21 +57,27 @@ func (c *DPFMAPICaller) General(
 	output *dpfm_api_output_formatter.SDC,
 	errs *[]error,
 	log *logger.Logger,
-) *dpfm_api_output_formatter.General {
-	plant := input.General.Plant
-	businessPartner := input.General.BusinessPartner
+) *[]dpfm_api_output_formatter.General {
+	where := "WHERE 1 = 1"
+
+	if input.General.BusinessPartner != nil {
+		where = fmt.Sprintf("%s\nAND BusinessPartner = %v", where, *input.General.BusinessPartner)
+	}
+
+	if input.General.Plant != nil {
+		where = fmt.Sprintf("%s\nAND Plant = \"%s\"", where, *input.General.Plant)
+	}
+
+	if input.General.IsMarkedForDeletion != nil {
+		where = fmt.Sprintf("%s\nAND IsMarkedForDeletion = %t", where, *input.General.IsMarkedForDeletion)
+	}
 
 	rows, err := c.db.Query(
-		`SELECT BusinessPartner, Plant,
-		PlantFullName, PlantName, Language, 
-		PlantFoundationDate, PlantLiquidationDate, PlantDeathDate, 
-		AddressID, Country, TimeZone, 
-		PlantIDByExtSystem, 
-		CreationDate, LastChangeDate,
-		IsMarkedForDeletion
+		`SELECT *
 		FROM DataPlatformMastersAndTransactionsMysqlKube.data_platform_plant_general_data
-		WHERE (BusinessPartner, Plant) = (?, ?);`, businessPartner, plant,
+		` + where + `;`,
 	)
+
 	if err != nil {
 		*errs = append(*errs, err)
 		return nil
@@ -92,44 +100,22 @@ func (c *DPFMAPICaller) Generals(
 	errs *[]error,
 	log *logger.Logger,
 ) *[]dpfm_api_output_formatter.General {
-	where := "WHERE true != true"
-	generals := input.Generals
-	for _, v := range generals {
-		clms := ""
-		val := ""
-		ok := false
-		if v.Plant != nil {
-			clms = fmt.Sprintf("%s, %s", clms, "Plant")
-			val = fmt.Sprintf("%s, '%s'", val, *v.Plant)
-			ok = true
-		}
-		if v.BusinessPartner != nil {
-			clms = fmt.Sprintf("%s, %s ", clms, "BusinessPartner")
-			val = fmt.Sprintf("%s, %d ", val, *v.BusinessPartner)
-			ok = true
-		}
-		if v.Language != nil {
-			clms = fmt.Sprintf("%s, %s ", clms, "Language")
-			val = fmt.Sprintf("%s, '%s' ", val, *v.Language)
-			ok = true
-		}
+	where := "WHERE 1 = 1"
 
-		if ok {
-			where = fmt.Sprintf("%s OR ( %s ) = ( %s ) ", where, clms[1:], val[1:])
-		}
+	if input.General.BusinessPartner != nil {
+		where = fmt.Sprintf("%s\nAND BusinessPartner = %v", where, *input.General.BusinessPartner)
+	}
 
+	if input.General.IsMarkedForDeletion != nil {
+		where = fmt.Sprintf("%s\nAND IsMarkedForDeletion = %t", where, *input.General.IsMarkedForDeletion)
 	}
 
 	rows, err := c.db.Query(
-		`SELECT BusinessPartner, Plant,
-		PlantFullName, PlantName, Language,
-		PlantFoundationDate, PlantLiquidationDate, PlantDeathDate,
-		AddressID, Country, TimeZone,
-		PlantIDByExtSystem,
-		CreationDate, LastChangeDate,
-		IsMarkedForDeletion
+		`SELECT *
 		FROM DataPlatformMastersAndTransactionsMysqlKube.data_platform_plant_general_data
-		` + where + `;`)
+		` + where + `;`,
+	)
+
 	if err != nil {
 		*errs = append(*errs, err)
 		return nil
@@ -137,6 +123,53 @@ func (c *DPFMAPICaller) Generals(
 	defer rows.Close()
 
 	data, err := dpfm_api_output_formatter.ConvertToGeneral(input, rows)
+	if err != nil {
+		*errs = append(*errs, err)
+		return nil
+	}
+
+	return &((*data)[0])
+}
+
+func (c *DPFMAPICaller) GeneralsByBusinessPartners(
+	mtx *sync.Mutex,
+	input *dpfm_api_input_reader.SDC,
+	output *dpfm_api_output_formatter.SDC,
+	errs *[]error,
+	log *logger.Logger,
+) *[]dpfm_api_output_formatter.General {
+	log.Info("GeneralsByBusinessPartners")
+	in := ""
+
+	for iGeneral, vGeneral := range input.Generals {
+		businessPartner := vGeneral.BusinessPartner
+		if iGeneral == 0 {
+			in = fmt.Sprintf(
+				"( '%d' )",
+				businessPartner,
+			)
+			continue
+		}
+		in = fmt.Sprintf(
+			"%s ,( '%d' )",
+			in,
+			businessPartner,
+		)
+	}
+
+	where := fmt.Sprintf(" WHERE ( BusinessPartner ) IN ( %s ) ", in)
+	rows, err := c.db.Query(
+		`SELECT *
+		FROM DataPlatformMastersAndTransactionsMysqlKube.data_platform_plant_general_data
+		` + where + ` ;`,
+	)
+	if err != nil {
+		*errs = append(*errs, err)
+		return nil
+	}
+	defer rows.Close()
+
+	data, err := dpfm_api_output_formatter.ConvertToGeneral(rows)
 	if err != nil {
 		*errs = append(*errs, err)
 		return nil
