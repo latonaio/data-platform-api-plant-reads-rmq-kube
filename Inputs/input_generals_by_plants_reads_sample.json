@@ -1,0 +1,73 @@
+{
+  "connection_key": "request",
+  "result": true,
+  "redis_key": "abcdefg",
+  "filepath": "/var/lib/aion/Data/rededge_sdc/abcdef.json",
+  "api_status_code": 200,
+  "runtime_session_id": "boi9ar543dg91ipdnspi099u231280ab0v8af0ew",
+  "business_partner": 201,
+  "service_label": "PLANT",
+  "api_type": "reads",
+  "Plants": [
+    {
+      "BusinessPartner": 101,
+      "Plant": "AB01",
+      "PlantFullName": "",
+      "PlantName": "",
+      "Language": "",
+      "PlantFoundationDate": "",
+      "PlantLiquidationDate": "",
+      "PlantDeathDate": "",
+      "AddressID": null,
+      "Country": "",
+      "TimeZone": "",
+      "PlantIDByExtSystem": "",
+      "CreationDate": "",
+      "LastChangeDate": "",
+      "IsMarkedForDeletion": false,
+      "StorageLocation": [
+        {
+          "StorageLocation": "",
+          "StorageLocationFullName": "",
+          "StorageLocationName": "",
+          "CreationDate": "",
+          "LastChangeDate": "",
+          "StorageLocationIDByExtSystem": "",
+          "IsMarkedForDeletion": null
+        }
+      ]
+    },
+    {
+      "BusinessPartner": 201,
+      "Plant": "TE01",
+      "PlantFullName": "",
+      "PlantName": "",
+      "Language": "",
+      "PlantFoundationDate": "",
+      "PlantLiquidationDate": "",
+      "PlantDeathDate": "",
+      "AddressID": null,
+      "Country": "",
+      "TimeZone": "",
+      "PlantIDByExtSystem": "",
+      "CreationDate": "",
+      "LastChangeDate": "",
+      "IsMarkedForDeletion": false,
+      "StorageLocation": [
+        {
+          "StorageLocation": "",
+          "StorageLocationFullName": "",
+          "StorageLocationName": "",
+          "CreationDate": "",
+          "LastChangeDate": "",
+          "StorageLocationIDByExtSystem": "",
+          "IsMarkedForDeletion": null
+        }
+      ]
+    }
+  ],
+  "api_schema": "DPFMPlantReads",
+  "accepter": [
+    "GeneralsByPlants"
+  ]
+}

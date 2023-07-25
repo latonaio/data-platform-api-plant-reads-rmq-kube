@@ -41,21 +41,21 @@ func ConvertToGeneral(sdc *api_input_reader.SDC, rows *sql.Rows) (*[]General, er
 		data := pm
 
 		generals = append(generals, General{
-			BusinessPartner:		data.BusinessPartner,
-			Plant:					data.Plant,
-			PlantFullName:			data.PlantFullName,
-			PlantName:				data.PlantName,
-			Language:				data.Language,
-			PlantFoundationDate:	data.PlantFoundationDate,
-			PlantLiquidationDate:	data.PlantLiquidationDate,
-			PlantDeathDate:			data.PlantDeathDate,
-			AddressID:				data.AddressID,
-			Country:				data.Country,
-			TimeZone:				data.TimeZone,
-			PlantIDByExtSystem:		data.PlantIDByExtSystem,
-			CreationDate:			data.CreationDate,
-			LastChangeDate:			data.LastChangeDate,
-			IsMarkedForDeletion:	data.IsMarkedForDeletion,
+			BusinessPartner:      data.BusinessPartner,
+			Plant:                data.Plant,
+			PlantFullName:        data.PlantFullName,
+			PlantName:            data.PlantName,
+			Language:             data.Language,
+			PlantFoundationDate:  data.PlantFoundationDate,
+			PlantLiquidationDate: data.PlantLiquidationDate,
+			PlantDeathDate:       data.PlantDeathDate,
+			AddressID:            data.AddressID,
+			Country:              data.Country,
+			TimeZone:             data.TimeZone,
+			PlantIDByExtSystem:   data.PlantIDByExtSystem,
+			CreationDate:         data.CreationDate,
+			LastChangeDate:       data.LastChangeDate,
+			IsMarkedForDeletion:  data.IsMarkedForDeletion,
 		})
 	}
 	if i == 0 {
@@ -66,9 +66,10 @@ func ConvertToGeneral(sdc *api_input_reader.SDC, rows *sql.Rows) (*[]General, er
 	return &generals, nil
 }
 
-func ConvertToStorageLocation(sdc *api_input_reader.SDC, rows *sql.Rows) (*StorageLocation, error) {
+func ConvertToStorageLocation(sdc *api_input_reader.SDC, rows *sql.Rows) (*[]StorageLocation, error) {
 	defer rows.Close()
 	pm := &requests.StorageLocation{}
+	storageLocations := make([]StorageLocation, 0, len(sdc.Generals))
 
 	i := 0
 	for rows.Next() {
@@ -87,16 +88,17 @@ func ConvertToStorageLocation(sdc *api_input_reader.SDC, rows *sql.Rows) (*Stora
 		)
 		if err != nil {
 			fmt.Printf("err = %+v \n", err)
-			return &StorageLocation{}, err
+			return &storageLocations, err
 		}
 	}
 	if i == 0 {
 		fmt.Printf("DBに対象のレコードが存在しません。")
-		return &StorageLocation{}, nil
+		return &storageLocations, nil
 	}
 
 	data := pm
-	storageLocation := &StorageLocation{
+
+	storageLocations = append(storageLocations, StorageLocation{
 		BusinessPartner:              data.BusinessPartner,
 		Plant:                        data.Plant,
 		StorageLocation:              data.StorageLocation,
@@ -106,6 +108,7 @@ func ConvertToStorageLocation(sdc *api_input_reader.SDC, rows *sql.Rows) (*Stora
 		CreationDate:                 data.CreationDate,
 		LastChangeDate:               data.LastChangeDate,
 		IsMarkedForDeletion:          data.IsMarkedForDeletion,
-	}
-	return storageLocation, nil
+	})
+
+	return &storageLocations, nil
 }

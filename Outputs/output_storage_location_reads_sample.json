@@ -1,0 +1,63 @@
+{
+	"connection_key": "request",
+	"result": true,
+	"redis_key": "abcdefg",
+	"filepath": "/var/lib/aion/Data/rededge_sdc/abcdef.json",
+	"api_status_code": 200,
+	"runtime_session_id": "boi9ar543dg91ipdnspi099u231280ab0v8af0ew",
+	"business_partner": 201,
+	"service_label": "PLANT",
+	"api_type": "reads",
+	"message": {
+		"General": [
+			{
+				"BusinessPartner": 101,
+				"Plant": "AB01",
+				"PlantFullName": null,
+				"PlantName": "ローソン本社",
+				"Language": "JA",
+				"PlantFoundationDate": null,
+				"PlantLiquidationDate": null,
+				"PlantDeathDate": null,
+				"AddressID": null,
+				"Country": null,
+				"TimeZone": null,
+				"PlantIDByExtSystem": null,
+				"CreationDate": "2023-07-19",
+				"LastChangeDate": "2023-07-19",
+				"IsMarkedForDeletion": false
+			},
+			{
+				"BusinessPartner": 201,
+				"Plant": "TE01",
+				"PlantFullName": null,
+				"PlantName": "山崎製パン",
+				"Language": "JA",
+				"PlantFoundationDate": null,
+				"PlantLiquidationDate": null,
+				"PlantDeathDate": null,
+				"AddressID": null,
+				"Country": null,
+				"TimeZone": null,
+				"PlantIDByExtSystem": null,
+				"CreationDate": "2023-07-19",
+				"LastChangeDate": "2023-07-19",
+				"IsMarkedForDeletion": false
+			}
+		],
+		"StorageLocation": null
+	},
+	"api_schema": "DPFMPlantReads",
+	"accepter": [
+		"GeneralsByPlants"
+	],
+	"deleted": false,
+	"sql_update_result": null,
+	"sql_update_error": "",
+	"subfunc_result": null,
+	"subfunc_error": "",
+	"exconf_result": null,
+	"exconf_error": "",
+	"api_processing_result": true,
+	"api_processing_error": ""
+}

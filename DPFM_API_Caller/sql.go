@@ -19,8 +19,8 @@ func (c *DPFMAPICaller) readSqlProcess(
 	errs *[]error,
 	log *logger.Logger,
 ) interface{} {
-	var general *dpfm_api_output_formatter.General
-	var storageLocation *dpfm_api_output_formatter.StorageLocation
+	var general *[]dpfm_api_output_formatter.General
+	var storageLocation *[]dpfm_api_output_formatter.StorageLocation
 	for _, fn := range accepter {
 		switch fn {
 		case "General":
@@ -34,6 +34,10 @@ func (c *DPFMAPICaller) readSqlProcess(
 		case "GeneralsByBusinessPartners":
 			func() {
 				general = c.GeneralsByBusinessPartners(mtx, input, output, errs, log)
+			}()
+		case "GeneralsByPlants":
+			func() {
+				general = c.GeneralsByPlants(mtx, input, output, errs, log)
 			}()
 		case "StorageLocation":
 			func() {
@@ -90,7 +94,7 @@ func (c *DPFMAPICaller) General(
 		return nil
 	}
 
-	return &((*data)[0])
+	return data
 }
 
 func (c *DPFMAPICaller) Generals(
@@ -103,7 +107,7 @@ func (c *DPFMAPICaller) Generals(
 	where := "WHERE 1 = 1"
 
 	if input.General.BusinessPartner != nil {
-		where = fmt.Sprintf("%s\nAND BusinessPartner = %v", where, *input.General.BusinessPartner)
+		where = fmt.Sprintf("%s\nAND BusinessPartner = %v", where, input.General.BusinessPartner)
 	}
 
 	if input.General.IsMarkedForDeletion != nil {
@@ -128,7 +132,7 @@ func (c *DPFMAPICaller) Generals(
 		return nil
 	}
 
-	return &((*data)[0])
+	return data
 }
 
 func (c *DPFMAPICaller) GeneralsByBusinessPartners(
@@ -169,7 +173,54 @@ func (c *DPFMAPICaller) GeneralsByBusinessPartners(
 	}
 	defer rows.Close()
 
-	data, err := dpfm_api_output_formatter.ConvertToGeneral(rows)
+	data, err := dpfm_api_output_formatter.ConvertToGeneral(input, rows)
+	if err != nil {
+		*errs = append(*errs, err)
+		return nil
+	}
+
+	return data
+}
+
+func (c *DPFMAPICaller) GeneralsByPlants(
+	mtx *sync.Mutex,
+	input *dpfm_api_input_reader.SDC,
+	output *dpfm_api_output_formatter.SDC,
+	errs *[]error,
+	log *logger.Logger,
+) *[]dpfm_api_output_formatter.General {
+	log.Info("GeneralsByPlants")
+	in := ""
+
+	for iGeneral, vGeneral := range input.Generals {
+		plant := vGeneral.Plant
+		if iGeneral == 0 {
+			in = fmt.Sprintf(
+				"( '%s' )",
+				plant,
+			)
+			continue
+		}
+		in = fmt.Sprintf(
+			"%s ,( '%s' )",
+			in,
+			plant,
+		)
+	}
+
+	where := fmt.Sprintf(" WHERE ( Plant ) IN ( %s ) ", in)
+	rows, err := c.db.Query(
+		`SELECT *
+		FROM DataPlatformMastersAndTransactionsMysqlKube.data_platform_plant_general_data
+		` + where + ` ;`,
+	)
+	if err != nil {
+		*errs = append(*errs, err)
+		return nil
+	}
+	defer rows.Close()
+
+	data, err := dpfm_api_output_formatter.ConvertToGeneral(input, rows)
 	if err != nil {
 		*errs = append(*errs, err)
 		return nil
@@ -184,10 +235,12 @@ func (c *DPFMAPICaller) StorageLocation(
 	output *dpfm_api_output_formatter.SDC,
 	errs *[]error,
 	log *logger.Logger,
-) *dpfm_api_output_formatter.StorageLocation {
+) *[]dpfm_api_output_formatter.StorageLocation {
+	log.Info("StorageLocation")
+
 	plant := input.General.Plant
 	businessPartner := input.General.BusinessPartner
-	storageLocation := input.General.StorageLocation.StorageLocation
+	storageLocation := input.General.StorageLocation[0].StorageLocation
 
 	rows, err := c.db.Query(
 		`SELECT BusinessPartner, Plant, StorageLocation,
