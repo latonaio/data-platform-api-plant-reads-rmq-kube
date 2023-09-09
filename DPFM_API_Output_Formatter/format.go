@@ -99,15 +99,15 @@ func ConvertToStorageLocation(sdc *api_input_reader.SDC, rows *sql.Rows) (*[]Sto
 	data := pm
 
 	storageLocations = append(storageLocations, StorageLocation{
-		BusinessPartner:              data.BusinessPartner,
-		Plant:                        data.Plant,
-		StorageLocation:              data.StorageLocation,
-		StorageLocationFullName:      data.StorageLocationFullName,
-		StorageLocationName:          data.StorageLocationName,
-		StorageLocationIDByExtSystem: data.StorageLocationIDByExtSystem,
-		CreationDate:                 data.CreationDate,
-		LastChangeDate:               data.LastChangeDate,
-		IsMarkedForDeletion:          data.IsMarkedForDeletion,
+			BusinessPartner:              data.BusinessPartner,
+			Plant:                        data.Plant,
+			StorageLocation:              data.StorageLocation,
+			StorageLocationFullName:      data.StorageLocationFullName,
+			StorageLocationName:          data.StorageLocationName,
+			StorageLocationIDByExtSystem: data.StorageLocationIDByExtSystem,
+			CreationDate:                 data.CreationDate,
+			LastChangeDate:               data.LastChangeDate,
+			IsMarkedForDeletion:          data.IsMarkedForDeletion,
 	})
 
 	return &storageLocations, nil

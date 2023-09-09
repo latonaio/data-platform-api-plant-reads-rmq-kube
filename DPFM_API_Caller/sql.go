@@ -106,10 +106,6 @@ func (c *DPFMAPICaller) Generals(
 ) *[]dpfm_api_output_formatter.General {
 	where := "WHERE 1 = 1"
 
-	if input.General.BusinessPartner != nil {
-		where = fmt.Sprintf("%s\nAND BusinessPartner = %v", where, input.General.BusinessPartner)
-	}
-
 	if input.General.IsMarkedForDeletion != nil {
 		where = fmt.Sprintf("%s\nAND IsMarkedForDeletion = %t", where, *input.General.IsMarkedForDeletion)
 	}
