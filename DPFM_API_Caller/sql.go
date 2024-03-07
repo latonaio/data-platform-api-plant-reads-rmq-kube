@@ -189,22 +189,25 @@ func (c *DPFMAPICaller) GeneralsByPlants(
 	in := ""
 
 	for iGeneral, vGeneral := range input.Generals {
+		businessPartner := vGeneral.BusinessPartner
 		plant := vGeneral.Plant
 		if iGeneral == 0 {
 			in = fmt.Sprintf(
-				"( '%s' )",
+				"( '%d','%s' )",
+				businessPartner,
 				plant,
 			)
 			continue
 		}
 		in = fmt.Sprintf(
-			"%s ,( '%s' )",
+			"%s ,( '%d','%s' )",
 			in,
+			businessPartner,
 			plant,
 		)
 	}
 
-	where := fmt.Sprintf(" WHERE ( Plant ) IN ( %s ) ", in)
+	where := fmt.Sprintf(" WHERE ( BusinessPartner, Plant ) IN ( %s ) ", in)
 	rows, err := c.db.Query(
 		`SELECT *
 		FROM DataPlatformMastersAndTransactionsMysqlKube.data_platform_plant_general_data
